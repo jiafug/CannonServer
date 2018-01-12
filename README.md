@@ -10,7 +10,7 @@ Im Folgenden wird ein Überblick über die schon vorgegebenen Ressourcen  gegebe
 
 ## 1) Projekt-Überblick
 
-[**GameServer**](/)   
+[**GameServer**](/README.md)   
 Der übergeordnete Projekt-Ordner. Hier befinden sich die Eclipse-Konfiguration und die Projekt-Dateien, außerdem natürlich alle im Folgenden beschriebenen Ordner.
    
 [**src**](/src)   
@@ -28,7 +28,7 @@ Packet für die Entity-Klassen des Klassenmodells, d.h. das Datenmodell des konk
 [**de.tuberlin.sese.swtpp.gameserver.test.cannon**](/src/de/tuberlin/sese/swtpp/gameserver/test/cannon)  
 Hier befinden sich die jUnit Testcases und Testsuiten, die von euch anzupassen sind.
          
-[**de.tuberlin.sese.swtpp.gameserver.swtpp.web**](/src/de/tuberlin/sese/swtpp/gameserver/swtpp/web)   
+[**de.tuberlin.sese.swtpp.gameserver.web**](/src/de/tuberlin/sese/swtpp/gameserver/web)   
 Hier befindet sich die Klasse GameServerServlet, welche die zentrale Komponente in die Web-Anwendung auf Server-Seite ist. Zu dem Servlet später mehr.
          
 [**build**](/build)   
@@ -41,7 +41,8 @@ In diesem Ordner werden die Web-Ressourcen des Projekts gespeichert, die der Apa
 ## 2) Implementierungsaufgabe
 
 Wir haben die Web-Funktionalität in dem gegebenen Projekt schon erledigt. Die Interaktion mit den Requests ist also für alle Use-Cases bereits erledigt. Die GUI (HTML/Javascript) für den Client-Browser) ist auch bereits erledigt. Das Gleiche gilt für die Server-Verwaltung, das abstrakte Spiel und einen großen Teil des Cannon-Spiels. Für euch bleibt nur die Implementierung einiger Funktionen in der CannonGame und die dazugehörigen Tests.    
-**Bestehender Code darf nicht geändert werden**. Zur Orientierung und Erklärung der bereits erledigten Anteile dienen die beiden folgenden Kapitel.   
+**Bestehender Code darf nicht geändert werden**.   
+Zur Orientierung und Erklärung der bereits erledigten Anteile dienen die beiden folgenden Kapitel.   
   
 ## 3) Das Servlet
 
