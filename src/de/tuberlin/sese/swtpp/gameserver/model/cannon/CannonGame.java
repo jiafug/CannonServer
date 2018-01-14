@@ -49,8 +49,10 @@ public class CannonGame extends Game implements Serializable {
 		// defines all possible positions of the towns
 		whiteTownPos = new ArrayList<>();
 		blackTownPos = new ArrayList<>();
-		String[] whitePosArray = new String[] {"b9-b9", "c9-c9", "d9-d9", "e9-e9", "f9-f9", "g9-g9", "h9-h9", "i9-i9"};
-		String[] blackPosArray = new String[] {"b0-b0", "c0-c0", "d0-d0", "e0-e0", "f0-f0", "g0-g0", "h0-h0", "i0-i0"};
+		String[] whitePosArray = new String[] { "b9-b9", "c9-c9", "d9-d9", "e9-e9", "f9-f9", "g9-g9", "h9-h9",
+				"i9-i9" };
+		String[] blackPosArray = new String[] { "b0-b0", "c0-c0", "d0-d0", "e0-e0", "f0-f0", "g0-g0", "h0-h0",
+				"i0-i0" };
 		whiteTownPos.addAll(Arrays.asList(whitePosArray));
 		blackTownPos.addAll(Arrays.asList(blackPosArray));
 	}
@@ -230,29 +232,23 @@ public class CannonGame extends Game implements Serializable {
 
 	@Override
 	public void setBoard(String state) {
-		// TODO: implement
-		System.out.println("-----------------------setBoard()-----------------------");
 		System.out.println("state: " + state);
 	}
 
 	@Override
 	public String getBoard() {
-		// TODO: replace with real implementation
-		System.out.println("-----------------------getBoard()-----------------------");
 		return boardStatus;
 	}
 
 	@Override
 	public boolean tryMove(String moveString, Player player) {
-		// TODO: implement
-		System.out.println("-----------------------tryMove()-----------------------");
 		System.out.println("moveString: " + moveString);
 		System.out.println("Player: " + player.getName());
 		if (!whiteTownSet || !blackTownSet) {
-			if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)){
+			if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)) {
 				boardStatus = "W9" + boardStatus;
 				whiteTownSet = true;
-			}if (player.equals(blackPlayer) && blackTownPos.contains(moveString)){
+			} else if (player.equals(blackPlayer) && blackTownPos.contains(moveString)) {
 				boardStatus = boardStatus + "3B6";
 				blackTownSet = true;
 			}
