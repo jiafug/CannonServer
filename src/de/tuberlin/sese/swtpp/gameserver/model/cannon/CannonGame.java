@@ -242,19 +242,31 @@ public class CannonGame extends Game implements Serializable {
 
 	@Override
 	public boolean tryMove(String moveString, Player player) {
-		System.out.println("moveString: " + moveString);
-		System.out.println("Player: " + player.getName());
 		if (!whiteTownSet || !blackTownSet) {
-			if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)) {
-				boardStatus = "W9" + boardStatus;
-				whiteTownSet = true;
-			} else if (player.equals(blackPlayer) && blackTownPos.contains(moveString)) {
-				boardStatus = boardStatus + "3B6";
-				blackTownSet = true;
+			if (setTown(moveString, player)) {
+				updateNext();
+				return true;
+			} else {
+				return false;
 			}
 		}
+		Move move = new Move(moveString, boardStatus, player);
 		updateNext();
-		return false;
+		return true;
+	}
+
+	private boolean setTown(String moveString, Player player) {
+		if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)) {
+			boardStatus = "W9" + boardStatus;
+			whiteTownSet = true;
+			return true;
+		} else if (player.equals(blackPlayer) && blackTownPos.contains(moveString)) {
+			boardStatus = boardStatus + "3B6";
+			blackTownSet = true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
