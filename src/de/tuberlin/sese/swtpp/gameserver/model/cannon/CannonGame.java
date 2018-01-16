@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import de.tuberlin.sese.swtpp.gameserver.model.Board;
 import de.tuberlin.sese.swtpp.gameserver.model.Game;
 import de.tuberlin.sese.swtpp.gameserver.model.Move;
 import de.tuberlin.sese.swtpp.gameserver.model.Player;
@@ -30,6 +31,7 @@ public class CannonGame extends Game implements Serializable {
 	private Player whitePlayer;
 
 	// internal representation of the game state
+	private Board board;
 	private String boardStatus;
 	private boolean whiteTownSet;
 	private boolean blackTownSet;
@@ -42,8 +44,10 @@ public class CannonGame extends Game implements Serializable {
 
 	public CannonGame() {
 		super();
+		board=new Board();
 		// set start position of all pieces
 		boardStatus = "/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/";
+		board.setBoard(boardStatus);
 		whiteTownSet = false;
 		blackTownSet = false;
 		// defines all possible positions of the towns
@@ -232,12 +236,13 @@ public class CannonGame extends Game implements Serializable {
 
 	@Override
 	public void setBoard(String state) {
+		board.setBoard(state);
 		System.out.println("state: " + state);
 	}
 
 	@Override
 	public String getBoard() {
-		return boardStatus;
+		return board.getBoard();
 	}
 
 	@Override
