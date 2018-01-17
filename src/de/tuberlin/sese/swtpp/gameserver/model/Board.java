@@ -1,8 +1,23 @@
 package de.tuberlin.sese.swtpp.gameserver.model;
 
-public class Board {
+import java.io.Serializable;
+
+import de.tuberlin.sese.swtpp.gameserver.model.cannon.CannonGame;
+
+public class Board implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8109492181730182687L;
 
 	protected int[][] board = new int[10][10];
+	private CannonGame game;
+	private final String letterIndex = "abcdefghij";
+
+	public Board(CannonGame game) {
+		this.game = game;
+	}
 
 	// [0][0] ist das Feld oben links, also a9, [9][9] ist j0 um mit dem
 	// FenString konform zu sein.
@@ -25,7 +40,6 @@ public class Board {
 					tmp = tmp + "b";
 				else if (board[i][j] == -2)
 					tmp = tmp + "B";
-
 			}
 			if (tmp.contentEquals("1111111111"))
 				tmp = "/";
@@ -33,7 +47,8 @@ public class Board {
 				tmp = tmp + "/";
 			result = result + tmp;
 		}
-		return result;
+		System.out.println(result.substring(0, result.length() - 1));
+		return result.substring(0, result.length() - 1);
 	}
 
 	public void setBoard(String fen) {
@@ -78,8 +93,20 @@ public class Board {
 				board[iCount][jCount] = 2;
 				jCount++;
 			}
-
 		}
+	}
+
+	public void setTown(String move) {
+		int xAxis = letterIndex.indexOf(move.charAt(0));
+		int yAxis = Math.abs(Character.getNumericValue(move.charAt(1)) - 9);
+		if (game.isWhiteNext())
+			board[yAxis][xAxis] = 2;
+		else
+			board[yAxis][xAxis] = -2;
+	}
+
+	public void performMove(String move) {
 
 	}
+
 }

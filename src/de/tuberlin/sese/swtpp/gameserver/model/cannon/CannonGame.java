@@ -44,7 +44,7 @@ public class CannonGame extends Game implements Serializable {
 
 	public CannonGame() {
 		super();
-		board=new Board();
+		board = new Board(this);
 		// set start position of all pieces
 		boardStatus = "/1w1w1w1w1w/1w1w1w1w1w/1w1w1w1w1w///b1b1b1b1b1/b1b1b1b1b1/b1b1b1b1b1/";
 		board.setBoard(boardStatus);
@@ -237,7 +237,6 @@ public class CannonGame extends Game implements Serializable {
 	@Override
 	public void setBoard(String state) {
 		board.setBoard(state);
-		System.out.println("state: " + state);
 	}
 
 	@Override
@@ -262,11 +261,11 @@ public class CannonGame extends Game implements Serializable {
 
 	private boolean setTown(String moveString, Player player) {
 		if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)) {
-			boardStatus = "W9" + boardStatus;
+			board.setTown(moveString);
 			whiteTownSet = true;
 			return true;
 		} else if (player.equals(blackPlayer) && blackTownPos.contains(moveString)) {
-			boardStatus = boardStatus + "3B6";
+			board.setTown(moveString);
 			blackTownSet = true;
 			return true;
 		} else {
