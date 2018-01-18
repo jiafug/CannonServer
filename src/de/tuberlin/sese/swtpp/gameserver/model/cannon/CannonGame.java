@@ -6,18 +6,16 @@ import java.util.Arrays;
 
 import de.tuberlin.sese.swtpp.gameserver.model.Board;
 import de.tuberlin.sese.swtpp.gameserver.model.Game;
-import de.tuberlin.sese.swtpp.gameserver.model.Move;
 import de.tuberlin.sese.swtpp.gameserver.model.Player;
 
 /**
  * Class LascaGame extends the abstract class Game as a concrete game instance
  * that allows to play Lasca (http://www.lasca.org/).
- *
  */
 public class CannonGame extends Game implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 5424778147226994452L;
 
@@ -178,7 +176,6 @@ public class CannonGame extends Game implements Serializable {
 	 ******************************************/
 
 	/**
-	 * 
 	 * @return True if it's white player's turn
 	 */
 	public boolean isWhiteNext() {
@@ -197,7 +194,7 @@ public class CannonGame extends Game implements Serializable {
 
 	/**
 	 * Finish game after regular move (save winner, move game to history etc.)
-	 * 
+	 *
 	 * @param player
 	 * @return
 	 */
@@ -247,26 +244,25 @@ public class CannonGame extends Game implements Serializable {
 	@Override
 	public boolean tryMove(String moveString, Player player) {
 		if (!whiteTownSet || !blackTownSet) {
-			if (setTown(moveString, player)) {
-				updateNext();
-				return true;
-			} else {
-				return false;
-			}
+			return setTown(moveString, player);
 		}
-		Move move = new Move(moveString, boardStatus, player);
-		updateNext();
-		return true;
+		if (board.performMove(moveString)) {
+			updateNext();
+			return true;
+		} else
+			return false;
 	}
 
 	private boolean setTown(String moveString, Player player) {
 		if (player.equals(whitePlayer) && whiteTownPos.contains(moveString)) {
 			board.setTown(moveString);
 			whiteTownSet = true;
+			updateNext();
 			return true;
 		} else if (player.equals(blackPlayer) && blackTownPos.contains(moveString)) {
 			board.setTown(moveString);
 			blackTownSet = true;
+			updateNext();
 			return true;
 		} else {
 			return false;
