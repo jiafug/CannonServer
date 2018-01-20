@@ -238,7 +238,12 @@ public class CannonGame extends Game implements Serializable {
 
 	@Override
 	public String getBoard() {
-		return board.getBoard();
+		String state = board.getBoard();
+        	if (blackTownSet && ((state.contains("W") && !state.contains("B")) || blackGaveUp()))
+            		finish(whitePlayer);
+        	else if (whiteTownSet && ((!state.contains("W") && state.contains("B")) || whiteGaveUp()))
+            		finish(blackPlayer);
+        	return state;
 	}
 
 	@Override
