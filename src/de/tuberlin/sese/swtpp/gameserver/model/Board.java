@@ -126,6 +126,9 @@ public class Board implements Serializable {
 			board[startY][startX] = 0;
 			board[destY][destX] = -1;
 			return true;
+		} else if (cannonAttack(startX, startY, destX, destY)) {
+			board[destY][destX] = 0;
+			return true;
 		} else
 			return false;
 	}
@@ -221,6 +224,53 @@ public class Board implements Serializable {
 						|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == -1 && board[startY][startX - 2] == -1
 						|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == -1 && board[startY + 2][startX - 2] == -1))));
 
+	}
+	
+	/**
+	 * checks if a cannon attack is possible
+	 */
+	private boolean cannonAttack(int startX, int startY, int destX, int destY) {
+		int enemySoldier;
+		int enemyTown;
+		int team;
+		if (game.isWhiteNext()) {
+			enemySoldier = -1;
+			enemyTown = -2;
+			team = 1;
+		} else {
+			enemySoldier = 1;
+			enemyTown = 2;
+			team = -1;
+		}
+		return (((board[destY][destX] == enemySoldier || board[destY][destX] == enemyTown)
+				&& (((destY == startY - 4 || destY == startY - 5) && destX == startX
+						&& board[startY - 1][startX] == team && board[startY - 2][startX] == team
+						&& board[startY - 3][startX] == 0)
+						|| (((destY == startY - 4 && destX == startX + 4)
+								|| (destY == startY - 5 && destX == startX + 5))
+								&& board[startY - 1][startX + 1] == team && board[startY - 2][startX + 2] == team
+								&& board[startY - 3][startX + 3] == 0)
+						|| (destY == startY && (destX == startX + 4 || destX == startX + 5)
+								&& board[startY][startX + 1] == team && board[startY][startX + 2] == team
+								&& board[startY][startX + 3] == 0)
+						|| (((destY == startY + 4 && destX == startX + 4)
+								|| (destY == startY + 5 && destX == startX + 5))
+								&& board[startY + 1][startX + 1] == team
+								&& board[startY + 2][startX + 2] == team && board[startY + 3][startX + 3] == 0)
+						|| ((destY == startY + 4 || destY == startY + 5) && destX == startX
+								&& board[startY + 1][startX] == team && board[startY + 2][startX] == team
+								&& board[startY + 3][startX] == 0)
+						|| (((destY == startY + 4 && destX == startX - 4)
+								|| (destY == startY + 5 && destX == startX - 5))
+								&& board[startY + 1][startX - 1] == team && board[startY + 2][startX - 2] == team
+								&& board[startY + 3][startX - 3] == 0)
+						|| (destY == startY && (destX == startX - 4 || destX == startX - 5)
+								&& board[startY][startX - 1] == team && board[startY][startX - 2] == team
+								&& board[startY][startX - 3] == 0)
+						|| (((destY == startY - 4 && destX == startX - 4)
+								|| (destY == startY - 5 && destX == startX - 5))
+								&& board[startY - 1][startX - 1] == team && board[startY - 2][startX - 2] == team
+								&& board[startY - 3][startX - 3] == 0))));
 	}
 
 }
