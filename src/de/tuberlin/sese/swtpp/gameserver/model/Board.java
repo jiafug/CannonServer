@@ -135,7 +135,8 @@ public class Board implements Serializable {
 	 */
 	private boolean checkWhite(int startX, int startY, int destX, int destY) {
 		return (game.isWhiteNext() && (board[startY][startX] == 1) && (simpleMove(startX, startY, destX, destY)
-				|| attackMove(startX, startY, destX, destY) || retreatMove(startX, startY, destX, destY)));
+				|| attackMove(startX, startY, destX, destY) || retreatMove(startX, startY, destX, destY) 
+				|| cannonMove(startX, startY, destX, destY)));
 	}
 
 	/**
@@ -143,7 +144,8 @@ public class Board implements Serializable {
 	 */
 	private boolean checkBlack(int startX, int startY, int destX, int destY) {
 		return (!game.isWhiteNext() && (board[startY][startX] == -1) && (simpleMove(startX, startY, destX, destY)
-				|| attackMove(startX, startY, destX, destY) || retreatMove(startX, startY, destX, destY)));
+				|| attackMove(startX, startY, destX, destY) || retreatMove(startX, startY, destX, destY) 
+				|| cannonMove(startX, startY, destX, destY)));
 	}
 
 	/**
@@ -191,6 +193,34 @@ public class Board implements Serializable {
 										|| board[startY + 1][startX - 1] == -1 || board[startY + 1][startX + 1] == -1)))
 				&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
 				&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
+	}
+	/**
+	 * checks if a cannon move is possible
+	 * 
+	 */
+	private boolean cannonMove(int startX, int startY, int destX, int destY) {
+		// Ueberprueft ob auf den naechsten zwei Feldern eigene Soladaten stehen
+		// und das Zielfeld leer ist.
+		// Rotiert im Uhrzeigersinn um alle moeglichen Richtungen abzudecken.
+		return (board[destY][destX] == 0 && ((game.isWhiteNext() && ((destY - startY == 3) && (destX == startX)
+				&& board[startY + 1][startX] == 1 && board[startY + 2][startX] == 1
+				|| (destY - startY == 3) && (destX - startX == 3) && board[startY + 1][startX + 1] == 1 && board[startY + 2][startX + 2] == 1
+				|| (destY == startY) && (destX - startX == 3) && board[startY][startX + 1] == 1 && board[startY][startX + 2] == 1
+				|| (destY - startY == -3) && (destX - startX == 3) && board[startY - 1][startX + 1] == 1 && board[startY - 2][startX + 2] == 1
+				|| (destY - startY == -3) && (destX == startX) && board[startY - 1][startX] == 1 && board[startY - 2][startX] == 1
+				|| (destY - startY == -3) && (destX - startX == -3) && board[startY - 1][startX - 1] == 1 && board[startY - 2][startX - 2] == 1
+				|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == 1 && board[startY][startX- 2] == 1
+				|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == 1 && board[startY + 2][startX - 2] == 1))
+				|| (!game.isWhiteNext()
+						&& ((destY - startY == 3) && (destX == startX) && board[startY + 1][startX] == -1 && board[startY + 2][startX] == -1
+						|| (destY - startY == 3) && (destX - startX == 3) && board[startY + 1][startX + 1] == -1 && board[startY + 2][startX + 2] == -1
+						|| (destY == startY) && (destX - startX == 3) && board[startY][startX + 1] == -1 && board[startY][startX + 2] == -1
+						|| (destY - startY == -3) && (destX - startX == 3) && board[startY - 1][startX + 1] == -1 && board[startY - 2][startX + 2] == -1
+						|| (destY - startY == -3) && (destX == startX) && board[startY - 1][startX] == -1 && board[startY - 2][startX] == -1
+						|| (destY - startY == -3) && (destX - startX == -3) && board[startY - 1][startX - 1] == -1 && board[startY - 2][startX - 2] == -1
+						|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == -1 && board[startY][startX - 2] == -1
+						|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == -1 && board[startY + 2][startX - 2] == -1))));
+
 	}
 
 }
