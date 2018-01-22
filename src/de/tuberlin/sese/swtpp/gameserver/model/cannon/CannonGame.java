@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import de.tuberlin.sese.swtpp.gameserver.model.Board;
 import de.tuberlin.sese.swtpp.gameserver.model.Game;
 import de.tuberlin.sese.swtpp.gameserver.model.Player;
 
@@ -239,18 +238,19 @@ public class CannonGame extends Game implements Serializable {
 	@Override
 	public String getBoard() {
 		String state = board.getBoard();
-        	if (blackTownSet && ((state.contains("W") && !state.contains("B")) || blackGaveUp()))
-            		finish(whitePlayer);
-        	else if (whiteTownSet && ((!state.contains("W") && state.contains("B")) || whiteGaveUp()))
-            		finish(blackPlayer);
-        	return state;
+		if (blackTownSet && ((state.contains("W") && !state.contains("B")) || blackGaveUp()))
+			finish(whitePlayer);
+		else if (whiteTownSet && ((!state.contains("W") && state.contains("B")) || whiteGaveUp()))
+			finish(blackPlayer);
+		System.out.println(state);
+		return state;
 	}
 
 	@Override
 	public boolean tryMove(String moveString, Player player) {
-		if (!whiteTownSet || !blackTownSet) {
+		String state = board.getBoard();
+		if ((!whiteTownSet && !state.contains("W")) || (!blackTownSet && !state.contains("B")))
 			return setTown(moveString, player);
-		}
 		if (board.performMove(moveString)) {
 			updateNext();
 			return true;
