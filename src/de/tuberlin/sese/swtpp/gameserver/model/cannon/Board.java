@@ -1,8 +1,6 @@
-package de.tuberlin.sese.swtpp.gameserver.model;
+package de.tuberlin.sese.swtpp.gameserver.model.cannon;
 
 import java.io.Serializable;
-
-import de.tuberlin.sese.swtpp.gameserver.model.cannon.CannonGame;
 
 public class Board implements Serializable {
 
@@ -11,7 +9,7 @@ public class Board implements Serializable {
 	 */
 	private static final long serialVersionUID = 8109492181730182687L;
 
-	protected int[][] board = new int[10][10];
+	private int[][] board = new int[10][10];
 	private CannonGame game;
 	private final String letterIndex = "abcdefghij";
 
@@ -47,7 +45,37 @@ public class Board implements Serializable {
 				tmp = tmp + "/";
 			result = result + tmp;
 		}
-		return result.substring(0, result.length() - 1);
+		return trimFenString(result.substring(0, result.length() - 1));
+	}
+
+	/**
+	 * adds all sequences of ones to get a shorter FEN string, in preparation
+	 * for the jUnit tests
+	 */
+	private String trimFenString(String toTrim) {
+		String result = "";
+		String[] seq = toTrim.split("/");
+		for (String row : seq) {
+			char[] rowArray = row.toCharArray();
+			int counter = 0;
+			for (int i = 0; i < rowArray.length; i++) {
+				if (rowArray[i] == '1')
+					counter++;
+				else if (counter != 0) {
+					result += counter;
+					result += rowArray[i];
+					counter = 0;
+				} else
+					result += rowArray[i];
+			}
+			if (rowArray.length != 0 && rowArray[rowArray.length - 1] == '1')
+				result += counter;
+			result = result + "/";
+		}
+		if (seq.length == 10)
+			return result.substring(0, result.length() - 1);
+		else
+			return result;
 	}
 
 	public void setBoard(String fen) {
@@ -55,6 +83,7 @@ public class Board implements Serializable {
 		int jCount = 0;
 		for (int f = 0; f < fen.length(); f++) {
 			char c = fen.charAt(f);
+			int space = Character.getNumericValue(fen.charAt(f));
 			// eine Reihe Null setzen
 			if (c == '/' && jCount == 0) {
 				for (int j = 0; j < 10; j++) {
@@ -68,9 +97,11 @@ public class Board implements Serializable {
 				jCount = 0;
 			}
 			// Null Feld
-			else if (c == '1') {
-				board[iCount][jCount] = 0;
-				jCount++;
+			else if (space > 0 && space < 10) {
+				for (int i = 0; i < space; i++) {
+					board[iCount][jCount] = 0;
+					jCount++;
+				}
 			}
 			// Schwarz Soldat
 			else if (c == 'b') {
