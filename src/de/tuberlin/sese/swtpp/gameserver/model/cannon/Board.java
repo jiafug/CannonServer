@@ -182,18 +182,20 @@ public class Board implements Serializable {
 				|| cannonMove(startX, startY, destX, destY)));
 	}
 
-	/**
+/**
 	 * checks if a simple move is possible
 	 */
 	private boolean simpleMove(int startX, int startY, int destX, int destY) {
 		// Ueberprueft ob auf dem Zielfeld sich Feind befindet und ob der
 		// Schritt ein
 		// Feld geradeaus oder diagonal verlaeuft
-		return ((board[destY][destX] == 0
-				|| (game.isWhiteNext() && (board[destY][destX] == -1) || board[destY][destX] == -2)
-				|| (!game.isWhiteNext() && (board[destY][destX] == 1 || board[destY][destX] == 2)))
-				&& (destX == startX + 1 || destX == startX - 1 || destX == startX)
-				&& ((game.isWhiteNext() && destY == startY + 1) || (!game.isWhiteNext() && destY == startY - 1)));
+		int var;
+		if (game.isWhiteNext())
+			var = -1;
+		else
+			var = 1;
+		return ((board[destY][destX] == 0 || ((board[destY][destX] == var) || board[destY][destX] == var * 2))
+				&& (destX == startX + 1 || destX == startX - 1 || destX == startX) && (destY == startY + (-1 * var)));
 	}
 
 	/**
@@ -202,9 +204,13 @@ public class Board implements Serializable {
 	private boolean attackMove(int startX, int startY, int destX, int destY) {
 		// Ueberprueft ob sich auf dem Zielfeld ein Feind befindet und ob das
 		// Zielfeld ein Feld rechts oder links ist
+		int var;
+		if (game.isWhiteNext())
+			var = -1;
+		else
+			var = 1;
 		return (destX == startX - 1 || destX == startX + 1) && (destY == startY)
-				&& ((game.isWhiteNext() && board[destY][destX] == -1 || board[destY][destX] == -2)
-						|| (!game.isWhiteNext() && (board[destY][destX] == 1 || board[destY][destX] == 2)));
+				&& (board[destY][destX] == var || board[destY][destX] == var * 2);
 	}
 
 	/**
@@ -214,94 +220,89 @@ public class Board implements Serializable {
 		// Ueberprueft ob das Zielfeld leer ist und keine Figur im Weg steht und
 		// ob der Schritt genau zwei Felder nach hinten gerade oder diagonal
 		// verlaeuft
+		int var;
+		if (game.isWhiteNext())
+			var = -1;
+		else
+			var = 1;
 		return (board[destY][destX] == 0
-				&& ((game.isWhiteNext() && destY == startY - 2
-						&& (board[startY + 1][startX] == -1 || board[startY][startX - 1] == -1
-								|| board[startY + 1][startX - 1] == -1 || board[startY][startX + 1] == -1
-								|| board[startY + 1][startX + 1] == -1 || board[startY - 1][startX] == -1
-								|| board[startY - 1][startX - 1] == -1 || board[startY - 1][startX + 1] == -1))
-						|| (!game.isWhiteNext() && destY == startY + 2
-								&& (board[startY - 1][startX] == 1 || board[startY][startX + 1] == 1
-										|| board[startY - 1][startX + 1] == 1 || board[startY][startX - 1] == 1
-										|| board[startY - 1][startX - 1] == 1 || board[startY + 1][startX] == -1
-										|| board[startY + 1][startX - 1] == -1 || board[startY + 1][startX + 1] == -1)))
+				&& (destY == startY + (2 * var) && (board[startY + 1][startX] == var || board[startY][startX - 1] == var
+						|| board[startY + 1][startX - 1] == var || board[startY][startX + 1] == var
+						|| board[startY + 1][startX + 1] == var || board[startY - 1][startX] == var
+						|| board[startY - 1][startX - 1] == var || board[startY - 1][startX + 1] == var))
 				&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
 				&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
 	}
+
 	/**
 	 * checks if a cannon move is possible
-	 * 
 	 */
 	private boolean cannonMove(int startX, int startY, int destX, int destY) {
 		// Ueberprueft ob auf den naechsten zwei Feldern eigene Soladaten stehen
 		// und das Zielfeld leer ist.
 		// Rotiert im Uhrzeigersinn um alle moeglichen Richtungen abzudecken.
-		return (board[destY][destX] == 0 && ((game.isWhiteNext() && ((destY - startY == 3) && (destX == startX)
-				&& board[startY + 1][startX] == 1 && board[startY + 2][startX] == 1
-				|| (destY - startY == 3) && (destX - startX == 3) && board[startY + 1][startX + 1] == 1 && board[startY + 2][startX + 2] == 1
-				|| (destY == startY) && (destX - startX == 3) && board[startY][startX + 1] == 1 && board[startY][startX + 2] == 1
-				|| (destY - startY == -3) && (destX - startX == 3) && board[startY - 1][startX + 1] == 1 && board[startY - 2][startX + 2] == 1
-				|| (destY - startY == -3) && (destX == startX) && board[startY - 1][startX] == 1 && board[startY - 2][startX] == 1
-				|| (destY - startY == -3) && (destX - startX == -3) && board[startY - 1][startX - 1] == 1 && board[startY - 2][startX - 2] == 1
-				|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == 1 && board[startY][startX- 2] == 1
-				|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == 1 && board[startY + 2][startX - 2] == 1))
-				|| (!game.isWhiteNext()
-						&& ((destY - startY == 3) && (destX == startX) && board[startY + 1][startX] == -1 && board[startY + 2][startX] == -1
-						|| (destY - startY == 3) && (destX - startX == 3) && board[startY + 1][startX + 1] == -1 && board[startY + 2][startX + 2] == -1
-						|| (destY == startY) && (destX - startX == 3) && board[startY][startX + 1] == -1 && board[startY][startX + 2] == -1
-						|| (destY - startY == -3) && (destX - startX == 3) && board[startY - 1][startX + 1] == -1 && board[startY - 2][startX + 2] == -1
-						|| (destY - startY == -3) && (destX == startX) && board[startY - 1][startX] == -1 && board[startY - 2][startX] == -1
-						|| (destY - startY == -3) && (destX - startX == -3) && board[startY - 1][startX - 1] == -1 && board[startY - 2][startX - 2] == -1
-						|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == -1 && board[startY][startX - 2] == -1
-						|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == -1 && board[startY + 2][startX - 2] == -1))));
+		int var;
+		if (game.isWhiteNext())
+			var = 1;
+		else
+			var = -1;
+		return (board[destY][destX] == 0 && (((destY - startY == 3) && (destX == startX)
+				&& board[startY + 1][startX] == var && board[startY + 2][startX] == var
+				|| (destY - startY == 3) && (destX - startX == 3) && board[startY + 1][startX + 1] == var
+						&& board[startY + 2][startX + 2] == var
+				|| (destY == startY) && (destX - startX == 3) && board[startY][startX + 1] == var
+						&& board[startY][startX + 2] == var
+				|| (destY - startY == -3) && (destX - startX == 3) && board[startY - 1][startX + 1] == var
+						&& board[startY - 2][startX + 2] == var
+				|| (destY - startY == -3) && (destX == startX) && board[startY - 1][startX] == var
+						&& board[startY - 2][startX] == var
+				|| (destY - startY == -3) && (destX - startX == -3) && board[startY - 1][startX - 1] == var
+						&& board[startY - 2][startX - 2] == var
+				|| (destY == startY) && (destX - startX == -3) && board[startY][startX - 1] == var
+						&& board[startY][startX - 2] == var
+				|| (destY - startY == 3) && (destX - startX == -3) && board[startY + 1][startX - 1] == var
+						&& board[startY + 2][startX - 2] == var)));
 
 	}
-	
+
 	/**
 	 * checks if a cannon attack is possible
 	 */
 	private boolean cannonAttack(int startX, int startY, int destX, int destY) {
-		int enemySoldier;
-		int enemyTown;
-		int team;
-		if (game.isWhiteNext()) {
-			enemySoldier = -1;
-			enemyTown = -2;
-			team = 1;
-		} else {
-			enemySoldier = 1;
-			enemyTown = 2;
-			team = -1;
-		}
-		return (((board[destY][destX] == enemySoldier || board[destY][destX] == enemyTown)
+		int var;
+		if (game.isWhiteNext())
+			var = -1;
+		else
+			var = 1;
+		return (((board[destY][destX] == var || board[destY][destX] == var * 2)
 				&& (((destY == startY - 4 || destY == startY - 5) && destX == startX
-						&& board[startY - 1][startX] == team && board[startY - 2][startX] == team
+						&& board[startY - 1][startX] == -1 * var && board[startY - 2][startX] == -1 * var
 						&& board[startY - 3][startX] == 0)
 						|| (((destY == startY - 4 && destX == startX + 4)
 								|| (destY == startY - 5 && destX == startX + 5))
-								&& board[startY - 1][startX + 1] == team && board[startY - 2][startX + 2] == team
-								&& board[startY - 3][startX + 3] == 0)
-						|| (destY == startY && (destX == startX + 4 || destX == startX + 5)
-								&& board[startY][startX + 1] == team && board[startY][startX + 2] == team
-								&& board[startY][startX + 3] == 0)
+								&& board[startY - 1][startX + 1] == -1 * var
+								&& board[startY - 2][startX + 2] == -1 * var && board[startY - 3][startX + 3] == 0)
+						|| (destY == startY
+								&& (destX == startX + 4 || destX == startX + 5) && board[startY][startX + 1] == -1 * var
+								&& board[startY][startX + 2] == -1 * var && board[startY][startX + 3] == 0)
 						|| (((destY == startY + 4 && destX == startX + 4)
 								|| (destY == startY + 5 && destX == startX + 5))
-								&& board[startY + 1][startX + 1] == team
-								&& board[startY + 2][startX + 2] == team && board[startY + 3][startX + 3] == 0)
-						|| ((destY == startY + 4 || destY == startY + 5) && destX == startX
-								&& board[startY + 1][startX] == team && board[startY + 2][startX] == team
-								&& board[startY + 3][startX] == 0)
+								&& board[startY + 1][startX + 1] == -1 * var
+								&& board[startY + 2][startX + 2] == -1 * var && board[startY + 3][startX + 3] == 0)
+						|| ((destY == startY + 4 || destY == startY + 5)
+								&& destX == startX && board[startY + 1][startX] == -1 * var
+								&& board[startY + 2][startX] == -1 * var && board[startY + 3][startX] == 0)
 						|| (((destY == startY + 4 && destX == startX - 4)
 								|| (destY == startY + 5 && destX == startX - 5))
-								&& board[startY + 1][startX - 1] == team && board[startY + 2][startX - 2] == team
-								&& board[startY + 3][startX - 3] == 0)
+								&& board[startY + 1][startX - 1] == -1 * var
+								&& board[startY + 2][startX - 2] == -1 * var && board[startY + 3][startX - 3] == 0)
 						|| (destY == startY && (destX == startX - 4 || destX == startX - 5)
-								&& board[startY][startX - 1] == team && board[startY][startX - 2] == team
+								&& board[startY][startX - 1] == -1 * var && board[startY][startX - 2] == -1 * var
 								&& board[startY][startX - 3] == 0)
 						|| (((destY == startY - 4 && destX == startX - 4)
 								|| (destY == startY - 5 && destX == startX - 5))
-								&& board[startY - 1][startX - 1] == team && board[startY - 2][startX - 2] == team
-								&& board[startY - 3][startX - 3] == 0))));
+								&& board[startY - 1][startX - 1] == -1 * var
+								&& board[startY - 2][startX - 2] == -1 * var && board[startY - 3][startX - 3] == 0))));
 	}
 
 }
