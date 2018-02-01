@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.tuberlin.sese.swtpp.gameserver.model.Game;
+import de.tuberlin.sese.swtpp.gameserver.model.Move;
 import de.tuberlin.sese.swtpp.gameserver.model.Player;
 
 /**
@@ -235,24 +236,40 @@ public class CannonGame extends Game implements Serializable {
 		board.setBoard(state);
 	}
 
+	private void checkPossibleMoves() {
+		if (board.allPossibleMoves().size() == 0) {
+			if (isWhiteNext())
+				finish(blackPlayer);
+			else
+				finish(whitePlayer);
+		}
+	}
+
 	@Override
 	public String getBoard() {
+		checkPossibleMoves();
 		String state = board.getBoard();
-		if (blackTownSet && ((state.contains("W") && !state.contains("B")) || blackGaveUp()))
+		if (state.contains("W"))
+			whiteTownSet = true;
+		if (state.contains("B"))
+			blackTownSet = true;
+		if (blackTownSet && whiteTownSet && !state.contains("B"))
 			finish(whitePlayer);
-		else if (whiteTownSet && ((!state.contains("W") && state.contains("B")) || whiteGaveUp()))
+		if (whiteTownSet && blackTownSet && !state.contains("W"))
 			finish(blackPlayer);
-		System.out.println(state);
 		return state;
 	}
 
 	@Override
 	public boolean tryMove(String moveString, Player player) {
+		checkPossibleMoves();
 		String state = board.getBoard();
 		if ((!whiteTownSet && !state.contains("W")) || (!blackTownSet && !state.contains("B")))
 			return setTown(moveString, player);
 		if (board.performMove(moveString)) {
+			history.add(new Move(moveString, state, player));
 			updateNext();
+			getBoard();
 			return true;
 		} else
 			return false;
