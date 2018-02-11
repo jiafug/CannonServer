@@ -18,7 +18,6 @@ public class Board implements Serializable {
 	public Board(CannonGame game) {
 		this.game = game;
 		this.possibleMoves = new HashSet<>();
-
 	}
 
 	// [0][0] ist das Feld oben links, also a9, [9][9] ist j0 um mit dem
@@ -83,7 +82,8 @@ public class Board implements Serializable {
 	}
 
 	public void setBoard(String fen) {
-		board = new int[10][10];
+		this.board = new int[10][10];
+		this.possibleMoves = new HashSet<>();
 		int iCount = 0;
 		int jCount = 0;
 		for (int f = 0; f < fen.length(); f++) {
@@ -276,24 +276,25 @@ public class Board implements Serializable {
 		// Ueberprueft ob das Zielfeld leer ist und keine Figur im Weg steht und
 		// ob der Schritt genau zwei Felder nach hinten gerade oder diagonal
 		// verlaeuft
-		try {
-			int var;
-			if (game.isWhiteNext())
-				var = -1;
-			else
-				var = 1;
-			return (board[destY][destX] == 0
-					&& (destY == startY + (2 * var)
-							&& (board[startY + 1][startX] == var || board[startY][startX - 1] == var
-									|| board[startY + 1][startX - 1] == var || board[startY][startX + 1] == var
-									|| board[startY + 1][startX + 1] == var || board[startY - 1][startX] == var
-									|| board[startY - 1][startX - 1] == var || board[startY - 1][startX + 1] == var))
-					&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
-					&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			return false;
-		}
+		int var;
+		if (game.isWhiteNext())
+			var = -1;
+		else
+			var = 1;
+		return (board[destY][destX] == 0
+				&& (destY == startY + (2 * var) && (index(startX, startY + 1) == var || index(startX - 1, startY) == var
+						|| index(startX - 1, startY + 1) == var || index(startX + 1, startY) == var
+						|| index(startX + 1, startY + 1) == var || index(startX, startY - 1) == var
+						|| index(startX - 1, startY - 1) == var || index(startX + 1, startY - 1) == var))
+				&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
+				&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
+	}
 
+	private int index(int x, int y) {
+		if (x < 0 || x > 9 || y < 0 || y > 9)
+			return 3;
+		else
+			return board[y][x];
 	}
 
 	/**
@@ -363,7 +364,8 @@ public class Board implements Serializable {
 						|| (((destY == startY - 4 && destX == startX - 4)
 								|| (destY == startY - 5 && destX == startX - 5))
 								&& board[startY - 1][startX - 1] == -1 * var
-								&& board[startY - 2][startX - 2] == -1 * var && board[startY - 3][startX - 3] == 0))));
+								&& board[startY - 2][startX - 2] == -1 * var && board[startY - 3][startX - 3] == 0)))
+				&& board[startY][startX] == -1 * var);
 	}
 
 }
