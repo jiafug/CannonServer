@@ -10,6 +10,8 @@ public class Board implements Serializable {
 	 */
 	private static final long serialVersionUID = 8109492181730182687L;
 
+	private int iCount=0;
+	private int jCount=0;
 	private int[][] board = new int[10][10];
 	private CannonGame game;
 	private final String letterIndex = "abcdefghij";
@@ -18,6 +20,7 @@ public class Board implements Serializable {
 	public Board(CannonGame game) {
 		this.game = game;
 		this.possibleMoves = new HashSet<>();
+
 	}
 
 	// [0][0] ist das Feld oben links, also a9, [9][9] ist j0 um mit dem
@@ -82,47 +85,21 @@ public class Board implements Serializable {
 	}
 
 	public void setBoard(String fen) {
-		this.board = new int[10][10];
-		this.possibleMoves = new HashSet<>();
-		int iCount = 0;
-		int jCount = 0;
 		for (int f = 0; f < fen.length(); f++) {
 			char c = fen.charAt(f);
 			int space = Character.getNumericValue(fen.charAt(f));
 			// eine Reihe Null setzen
-			if (c == '/' && jCount == 0) {
-				for (int j = 0; j < 10; j++) {
-					board[iCount][jCount] = 0;
-				}
-				iCount++;
-			}
+			if (c == '/' && jCount == 0) setRowNull();
 			// eine Reihe weiter am Ende
-			if (c == '/' && jCount != 0) {
-				iCount++;
-				jCount = 0;
-			}
+			if (c == '/' && jCount != 0) oneFurther();
 			// Null Feld
-			if (space > 0 && space < 10) {
-				for (int i = 0; i < space; i++) {
-					board[iCount][jCount] = 0;
-					jCount++;
-				}
-			}
+			if (space > 0 && space < 10) nullField(space);
 			// Schwarz Soldat
-			if (c == 'b') {
-				board[iCount][jCount] = -1;
-				jCount++;
-			}
+			if (c == 'b') blackSoldier();
 			// Schwarz Stadt
-			if (c == 'B') {
-				board[iCount][jCount] = -2;
-				jCount++;
-			}
+			if (c == 'B') blackCity();
 			// Weiss Soldat
-			if (c == 'w') {
-				board[iCount][jCount] = 1;
-				jCount++;
-			}
+			if (c == 'w') whiteSoldier();
 			// Weiss Stadt
 			if (c == 'W') {
 				board[iCount][jCount] = 2;
@@ -130,7 +107,38 @@ public class Board implements Serializable {
 			}
 		}
 	}
+	
+	public void setRowNull(){
+		for (int j = 0; j < 10; j++) {
+			board[iCount][jCount] = 0;
+		}
+		iCount++;
+	}
+	
+	public void oneFurther(){
+		iCount++;
+		jCount = 0;
+	}
+	
+	public void nullField(int space){
+		for (int i = 0; i < space; i++) {
+			board[iCount][jCount] = 0;
+			jCount++;
+		}}
+	public void blackSoldier(){
+		board[iCount][jCount] = -1;
+		jCount++;
+	}
 
+	public void blackCity() {
+		board[iCount][jCount] = -2;
+		jCount++;
+	}
+	
+	public void whiteSoldier(){
+		board[iCount][jCount] = 1;
+		jCount++;
+	}
 	/**
 	 * sets the town by changing the 2D board array
 	 */
@@ -276,25 +284,24 @@ public class Board implements Serializable {
 		// Ueberprueft ob das Zielfeld leer ist und keine Figur im Weg steht und
 		// ob der Schritt genau zwei Felder nach hinten gerade oder diagonal
 		// verlaeuft
-		int var;
-		if (game.isWhiteNext())
-			var = -1;
-		else
-			var = 1;
-		return (board[destY][destX] == 0
-				&& (destY == startY + (2 * var) && (index(startX, startY + 1) == var || index(startX - 1, startY) == var
-						|| index(startX - 1, startY + 1) == var || index(startX + 1, startY) == var
-						|| index(startX + 1, startY + 1) == var || index(startX, startY - 1) == var
-						|| index(startX - 1, startY - 1) == var || index(startX + 1, startY - 1) == var))
-				&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
-				&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
-	}
+		try {
+			int var;
+			if (game.isWhiteNext())
+				var = -1;
+			else
+				var = 1;
+			return (board[destY][destX] == 0
+					&& (destY == startY + (2 * var)
+							&& (board[startY + 1][startX] == var || board[startY][startX - 1] == var
+									|| board[startY + 1][startX - 1] == var || board[startY][startX + 1] == var
+									|| board[startY + 1][startX + 1] == var || board[startY - 1][startX] == var
+									|| board[startY - 1][startX - 1] == var || board[startY - 1][startX + 1] == var))
+					&& (destX == startX - 2 || destX == startX + 2 || destX == startX)
+					&& board[(destY + startY) / 2][(destX + startX) / 2] == 0);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return false;
+		}
 
-	private int index(int x, int y) {
-		if (x < 0 || x > 9 || y < 0 || y > 9)
-			return 3;
-		else
-			return board[y][x];
 	}
 
 	/**
@@ -337,35 +344,58 @@ public class Board implements Serializable {
 		else
 			var = 1;
 		return (((board[destY][destX] == var || board[destY][destX] == var * 2)
-				&& (((destY == startY - 4 || destY == startY - 5) && destX == startX
-						&& board[startY - 1][startX] == -1 * var && board[startY - 2][startX] == -1 * var
-						&& board[startY - 3][startX] == 0)
-						|| (((destY == startY - 4 && destX == startX + 4)
-								|| (destY == startY - 5 && destX == startX + 5))
-								&& board[startY - 1][startX + 1] == -1 * var
-								&& board[startY - 2][startX + 2] == -1 * var && board[startY - 3][startX + 3] == 0)
-						|| (destY == startY
-								&& (destX == startX + 4 || destX == startX + 5) && board[startY][startX + 1] == -1 * var
-								&& board[startY][startX + 2] == -1 * var && board[startY][startX + 3] == 0)
-						|| (((destY == startY + 4 && destX == startX + 4)
-								|| (destY == startY + 5 && destX == startX + 5))
-								&& board[startY + 1][startX + 1] == -1 * var
-								&& board[startY + 2][startX + 2] == -1 * var && board[startY + 3][startX + 3] == 0)
-						|| ((destY == startY + 4 || destY == startY + 5)
-								&& destX == startX && board[startY + 1][startX] == -1 * var
-								&& board[startY + 2][startX] == -1 * var && board[startY + 3][startX] == 0)
-						|| (((destY == startY + 4 && destX == startX - 4)
-								|| (destY == startY + 5 && destX == startX - 5))
-								&& board[startY + 1][startX - 1] == -1 * var
-								&& board[startY + 2][startX - 2] == -1 * var && board[startY + 3][startX - 3] == 0)
-						|| (destY == startY && (destX == startX - 4 || destX == startX - 5)
-								&& board[startY][startX - 1] == -1 * var && board[startY][startX - 2] == -1 * var
-								&& board[startY][startX - 3] == 0)
-						|| (((destY == startY - 4 && destX == startX - 4)
-								|| (destY == startY - 5 && destX == startX - 5))
-								&& board[startY - 1][startX - 1] == -1 * var
-								&& board[startY - 2][startX - 2] == -1 * var && board[startY - 3][startX - 3] == 0)))
-				&& board[startY][startX] == -1 * var);
+				&& (whateverA( startX,  startY,destX, destY, var)
+						|| whateverB( startX, startY, destX, destY, var)
+						|| whateverC(startX, startY, destX, destY, var)
+						|| whateverD(startX, startY, destX, destY, var)
+						|| whateverE(startX, startY, destX, destY,  var)
+						|| whateverF(startX, startY, destX, destY, var)
+						|| whateverG(startX, startY, destX, destY, var)
+						|| whateverH(startX, startY, destX, destY, var))));
 	}
 
+	public boolean whateverA(int startX, int startY, int destX, int destY, int var){
+		return ((destY == startY - 4 || destY == startY - 5) && destX == startX
+				&& board[startY - 1][startX] == -1 * var && board[startY - 2][startX] == -1 * var
+				&& board[startY - 3][startX] == 0);
+	}
+	public boolean whateverB(int startX, int startY, int destX, int destY, int var){
+		return (((destY == startY - 4 && destX == startX + 4)
+				|| (destY == startY - 5 && destX == startX + 5))
+				&& board[startY - 1][startX + 1] == -1 * var
+				&& board[startY - 2][startX + 2] == -1 * var && board[startY - 3][startX + 3] == 0);
+	}
+	public boolean whateverC(int startX, int startY, int destX, int destY, int var){
+		return (destY == startY
+				&& (destX == startX + 4 || destX == startX + 5) && board[startY][startX + 1] == -1 * var
+				&& board[startY][startX + 2] == -1 * var && board[startY][startX + 3] == 0);
+	}
+	public boolean whateverD(int startX, int startY, int destX, int destY, int var){
+		return (((destY == startY + 4 && destX == startX + 4)
+				|| (destY == startY + 5 && destX == startX + 5))
+				&& board[startY + 1][startX + 1] == -1 * var
+				&& board[startY + 2][startX + 2] == -1 * var && board[startY + 3][startX + 3] == 0);
+	}
+	public boolean whateverE(int startX, int startY, int destX, int destY, int var){
+		return ((destY == startY + 4 || destY == startY + 5)
+				&& destX == startX && board[startY + 1][startX] == -1 * var
+				&& board[startY + 2][startX] == -1 * var && board[startY + 3][startX] == 0);
+	}
+	public boolean whateverF(int startX, int startY, int destX, int destY, int var){
+		return (((destY == startY + 4 && destX == startX - 4)
+				|| (destY == startY + 5 && destX == startX - 5))
+				&& board[startY + 1][startX - 1] == -1 * var
+				&& board[startY + 2][startX - 2] == -1 * var && board[startY + 3][startX - 3] == 0);
+	}
+	public boolean whateverG(int startX, int startY, int destX, int destY, int var){
+		return (destY == startY && (destX == startX - 4 || destX == startX - 5)
+				&& board[startY][startX - 1] == -1 * var && board[startY][startX - 2] == -1 * var
+				&& board[startY][startX - 3] == 0);
+	}
+	public boolean whateverH(int startX, int startY, int destX, int destY, int var){
+		return (((destY == startY - 4 && destX == startX - 4)
+				|| (destY == startY - 5 && destX == startX - 5))
+				&& board[startY - 1][startX - 1] == -1 * var
+				&& board[startY - 2][startX - 2] == -1 * var && board[startY - 3][startX - 3] == 0);
+	}
 }
