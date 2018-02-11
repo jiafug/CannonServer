@@ -90,39 +90,17 @@ public class Board implements Serializable {
 			char c = fen.charAt(f);
 			int space = Character.getNumericValue(fen.charAt(f));
 			// eine Reihe Null setzen
-			if (c == '/' && jCount == 0) {
-				for (int j = 0; j < 10; j++) {
-					board[iCount][jCount] = 0;
-				}
-				iCount++;
-			}
+			if (c == '/' && jCount == 0) setRowNull(iCount, jCount, board);
 			// eine Reihe weiter am Ende
-			if (c == '/' && jCount != 0) {
-				iCount++;
-				jCount = 0;
-			}
+			if (c == '/' && jCount != 0) oneFurther(iCount, jCount, board);
 			// Null Feld
-			if (space > 0 && space < 10) {
-				for (int i = 0; i < space; i++) {
-					board[iCount][jCount] = 0;
-					jCount++;
-				}
-			}
+			if (space > 0 && space < 10) nullField(space, iCount, jCount, board);
 			// Schwarz Soldat
-			if (c == 'b') {
-				board[iCount][jCount] = -1;
-				jCount++;
-			}
+			if (c == 'b') blackSoldier(iCount, jCount, board);
 			// Schwarz Stadt
-			if (c == 'B') {
-				board[iCount][jCount] = -2;
-				jCount++;
-			}
+			if (c == 'B') blackCity(iCount, jCount, board);
 			// Weiss Soldat
-			if (c == 'w') {
-				board[iCount][jCount] = 1;
-				jCount++;
-			}
+			if (c == 'w') whiteSoldier(iCount, jCount, board);
 			// Weiss Stadt
 			if (c == 'W') {
 				board[iCount][jCount] = 2;
@@ -130,7 +108,38 @@ public class Board implements Serializable {
 			}
 		}
 	}
+	
+	public void setRowNull(int iCount, int jCount, int[][] board){
+		for (int j = 0; j < 10; j++) {
+			board[iCount][jCount] = 0;
+		}
+		iCount++;
+	}
+	
+	public void oneFurther(int iCount, int jCount, int[][] board){
+		iCount++;
+		jCount = 0;
+	}
+	
+	public void nullField(int space, int iCount, int jCount, int [][] board){
+		for (int i = 0; i < space; i++) {
+			board[iCount][jCount] = 0;
+			jCount++;
+		}}
+	public void blackSoldier(int iCount, int jCount, int[][] board){
+		board[iCount][jCount] = -1;
+		jCount++;
+	}
 
+	public void blackCity(int iCount, int jCount,int[][] board) {
+		board[iCount][jCount] = -2;
+		jCount++;
+	}
+	
+	public void whiteSoldier(int iCount, int jCount,int[][] board){
+		board[iCount][jCount] = 1;
+		jCount++;
+	}
 	/**
 	 * sets the town by changing the 2D board array
 	 */
