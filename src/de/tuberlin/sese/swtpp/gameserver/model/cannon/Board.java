@@ -84,10 +84,7 @@ public class Board implements Serializable {
 	}
 
 	public void setBoard(String fen) {
-		this.iCount = 0;
-		this.jCount = 0;
-		this.board = new int[10][10];
-		this.possibleMoves = new HashSet<>();
+		reset();
 		for (int f = 0; f < fen.length(); f++) {
 			char c = fen.charAt(f);
 			int space = Character.getNumericValue(fen.charAt(f));
@@ -97,23 +94,34 @@ public class Board implements Serializable {
 			// eine Reihe weiter am Ende
 			if (c == '/' && jCount != 0)
 				oneFurther();
-			// Null Feld
-			if (space > 0 && space < 10)
-				nullField(space);
-			// Schwarz Soldat
-			if (c == 'b')
-				blackSoldier();
-			// Schwarz Stadt
-			if (c == 'B')
-				blackCity();
-			// Weiss Soldat
-			if (c == 'w')
-				whiteSoldier();
-			// Weiss Stadt
-			if (c == 'W') {
-				board[iCount][jCount] = 2;
-				jCount++;
-			}
+			ifPartTwo(space, c);
+		}
+	}
+
+	private void reset() {
+		this.iCount = 0;
+		this.jCount = 0;
+		this.board = new int[10][10];
+		this.possibleMoves = new HashSet<>();
+	}
+
+	private void ifPartTwo(int space, char c) {
+		// Null Feld
+		if (space > 0 && space < 10)
+			nullField(space);
+		// Schwarz Soldat
+		if (c == 'b')
+			blackSoldier();
+		// Schwarz Stadt
+		if (c == 'B')
+			blackCity();
+		// Weiss Soldat
+		if (c == 'w')
+			whiteSoldier();
+		// Weiss Stadt
+		if (c == 'W') {
+			board[iCount][jCount] = 2;
+			jCount++;
 		}
 	}
 
